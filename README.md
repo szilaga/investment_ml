@@ -14,7 +14,7 @@ The data set is directly query over the yfinance API.
 
 
 # Quickstart
-Download the entire Git Repo including the datasets. Execute the notebook <b>"stock_price_predictor.ipynb"</b> in your jupyter.<br/>
+Download the entire Git Repo including the datasets. Execute the notebook <b>"stock_predictor.ipynb"</b> in your jupyter.<br/>
 Before execution: If you do not already have installed the listed libraies below, please install them in a previous step.
 
 - Install <a href="https://pypi.org/project/pandas/">Pandas:</a> `pip install pandas`
