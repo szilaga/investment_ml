@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
+from helper import Helper
 
-class Statistics:
-
+class Statistics():
 
     #### Statistical functions
     def get_globalStats(self, data, column):
@@ -130,8 +130,10 @@ class Statistics:
         In either case, a negative Sharpe ratio does not convey any useful meaning.
 
         '''
+        h = Helper()
+
         # get daily riskfree
-        d_rf = round(nth_root(1.0 + 0.1, 252) - 1, 4)
+        d_rf = round(h.nth_root(1.0 + 0.1, 252) - 1, 4)
 
         # get daily return
         d_rt = data.to_frame()

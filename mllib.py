@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, mean_squared_error
+from sklearn.metrics import confusion_matrix, mean_squared_error, r2_score, mean_absolute_error
 from sklearn.linear_model import LinearRegression, ARDRegression
 
 from sklearn.neural_network import MLPRegressor
@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler,MinMaxScaler
 
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from keras.optimizers import Adam
 
 
 class MLLib:
@@ -26,11 +27,15 @@ class MLLib:
 
     def get_MLPRegressor(self,x_train, y_train, max_iter=1000, hls=100):
         '''
-        Predict stock price based on neuronal network
-        input: lineare model, x test data, y test data
-        output: the predicted values for the test data
+        Train neuronal network model to predict stock prices
+        :param x_train:
+        :param y_train:
+        :param max_iter:
+        :param hls:
+        :return: ml model as object
         '''
-        # Scaling data
+
+        # Normalize Data
         scaler = StandardScaler()
         scaler.fit(x_train)
         x_train_scaled = scaler.transform(x_train)
@@ -41,21 +46,49 @@ class MLLib:
 
         return MLP, scaler
 
-    def get_LSTM(self,x_train, y_train):
-        x_train_data1, y_train_data1 = np.array(x_train), np.array(y_train)
+    def get_LSTM(self,x_train, y_train, x_test, y_test):
+        '''
+        Train LSTM neuronal network model to predict stock prices
+        :param x_train:
+        :param y_train:
+        :return: ml model as object
+        '''
 
-        x_train_data2 = np.reshape(x_train_data1, (x_train_data1.shape[0], x_train_data1.shape[1], 1))
+        # Convert x_train and y_train to numpy arrays and reshaping
+        x_train_data, y_train_data = np.array(x_train), np.array(y_train)
+        x_train_data = np.reshape(x_train_data, (x_train_data.shape[0], x_train_data.shape[1], 1))
+
+        # set test data
+        x_test_data, y_test_data = np.array(x_test), np.array(y_test)
+        x_test_data = np.reshape(x_test_data, (x_test_data.shape[0], x_test_data.shape[1], 1))
 
         model = Sequential()
-        model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train_data2.shape[1], 1)))
-        model.add(LSTM(units=50, return_sequences=False))
-        model.add(Dense(units=25))
+        model.add(LSTM(units=100, return_sequences=True, input_shape=(x_train_data.shape[1], 1)))
+        model.add(LSTM(units=100, return_sequences=True))
+        model.add(LSTM(units=100, return_sequences=False))
+        model.add(Dense(units=50))
         model.add(Dense(units=1))
 
-        model.compile(optimizer='adam', loss='mean_squared_error')
-        model.fit(x_train_data2, y_train_data1, batch_size=1, epochs=1)
+        #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy','mean_squared_error'])
+        #model.compile(loss='binary_crossentropy', optimizer='adam')
+        model.compile(loss='mse', optimizer='adam', metrics=['mse'])
+        #print(model.summary())
 
-        return model
+        #model.fit(x_train_data, y_train_data, batch_size=100, validation_data=(x_test_data, y_test_data), epochs=10)
+        model.fit(x_train_data, y_train_data, batch_size=100, epochs=10, verbose=0)
+
+        # Make prediction
+        y_pred = model.predict(x_test_data)
+
+        # Evaluation of the model
+        scores = model.evaluate(x_test_data,y_test_data, verbose=1)
+        print('R2 Score: ', r2_score(y_test_data, y_pred))
+        print('MAE: ', mean_absolute_error(y_test_data, y_pred))
+        print('Test loss:', scores[0])
+        print('Test accuracy:', scores[1])
+        print("Accuracy: %.2f%%" % (scores[1] * 100))
+
+        return y_pred
 
     def get_Predictions(self, model, x_test, y_test, modelname):
         '''

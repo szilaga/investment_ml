@@ -35,7 +35,7 @@ class Plots:
         fig.tight_layout()
         plt.show()
 
-    def show_ScatterPlot(self, train, test, pred_1, pred_2, ticker, w, h, model_1, model_2, forecast):
+    def show_ScatterPlot(self, train, test, pred_1, pred_2, pred_3, ticker, w, h, model_1, model_2, model_3, forecast):
         '''
         Creates a Scatter plot that shows the actual stock price, and the predicted stockprice
 
@@ -50,10 +50,10 @@ class Plots:
         D2 = go.Scatter(x=test.index, y=test[ticker], name='Test Actual')  # Testing actuals
         D3 = go.Scatter(x=test.index, y=pred_1, name='Prediction {}'.format(model_1))  # Testing predction
         D4 = go.Scatter(x=test.index, y=pred_2, name='Prediction {}'.format(model_2))  # Testing predction
-        # D5 = go.Scatter(x=test.index,y=pred_3, name = 'Prediction {}'.format(model_3)) # Testing predction
+        D5 = go.Scatter(x=test.index, y=pred_3[ticker], name = 'Prediction {}'.format(model_3)) # Testing predction
 
         # Combine in an object
-        line = {'data': [D1, D2, D3, D4],
+        line = {'data': [D1, D2, D3, D4, D5],
                 'layout': {
                     'xaxis': {'title': 'Date'},
                     'yaxis': {'title': 'Price'},
@@ -84,7 +84,7 @@ class Plots:
 
         # Add line
         beta, alpha = np.polyfit(df1, df2, 1)
-        lrange = np.arange(start=df1.min(), stop=df1.max(), step=0.1)  # set range length
+        lrange = np.arange(start= df1.min(), stop= df1.max(), step=0.1)  # set range length
         fig.add_trace(go.Scatter(x=lrange, y=beta * lrange + alpha,
                                  mode='lines',
                                  #name='Line',

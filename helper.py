@@ -89,9 +89,21 @@ class Helper:
     def normalize(self, df):
         '''
         normalize all values of a dataframe between 0 and 1
+        :param df:
+        :return: Dataframe, min, max
         '''
         # normalize values
-        return (df - df.min()) / (df.max() - df.min())
+        return (df - df.min()) / (df.max() - df.min()),df.max(),df.min()
+
+    def denormalize(self,df,max,min):
+        '''
+        recreate dataframe before normalization
+        :param df:
+        :param max:
+        :param min:
+        :return:Dataframe
+        '''
+        return df * (max - min) + min
 
     def normalize_price(self, data):
         '''
@@ -207,9 +219,9 @@ class Helper:
         # cut last columns
         data.drop(data.tail(forecast).index, inplace=True)
         # set column to index
-        data = data.set_index('date')
+        #data = data.set_index('date')
         # drop date column
-        # data.drop('date', axis=1, inplace=True)
+        data.drop('date', axis=1, inplace=True)
         # add forecast values
         data['{}_shift'.format(column)] = shift
 
