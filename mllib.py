@@ -74,6 +74,14 @@ class MLLib:
         x_test_data, y_test_data = np.array(x_test), np.array(y_test)
         x_test_data = np.reshape(x_test_data, (x_test_data.shape[0], x_test_data.shape[1], 1))
 
+        #50
+        #1
+        #2
+
+        #50
+        #20
+        #4
+
         model = Sequential()
         # add first layer
         model.add(LSTM(units=100, return_sequences=True, input_shape=(x_train_data.shape[1], 1)))
@@ -94,7 +102,7 @@ class MLLib:
         # print(model.summary())
 
         # fit model
-        model.fit(x_train_data, y_train_data, batch_size=100, epochs=10, verbose=0)
+        model.fit(x_train_data, y_train_data, batch_size=4, epochs=6, verbose=0)
 
         # make prediction
         y_pred = model.predict(x_test_data)
@@ -115,7 +123,9 @@ class MLLib:
 
         print('{} R2: {}'.format('LSTM', y_R2))
         print('{} MSE: {}'.format('LSTM', y_MSE))  # Mean square error
+        print('{} RMSE: {}'.format('LSTM', np.sqrt(y_MSE)))  # Root square error
         print('{} MAE: {}'.format('LSTM', y_MAE))  # Mean absolute error
+
         print('Test loss:', scores[0])
         print('Test accuracy:', scores[1])
         print("Accuracy: %.2f%%" % (scores[1] * 100))
@@ -138,6 +148,7 @@ class MLLib:
 
         print('{} R2: {}'.format(modelname, y_R2))
         print('{} MSE: {}'.format(modelname, y_MSE)) # Mean square error
+        print('{} RMSE: {}'.format(modelname, np.sqrt(y_MSE)))  # Root square error
         print('{} MAE: {}'.format(modelname, y_MAE)) # Mean absolute error
         print("Accuracy:", accuracy)
 
