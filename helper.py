@@ -4,6 +4,8 @@ import numpy as np
 from datetime import timedelta
 from get_all_tickers import get_tickers as gt
 import ipywidgets as widgets
+import requests
+
 
 class Helper:
 
@@ -48,6 +50,32 @@ class Helper:
         :return: list of ticker symbols
         '''
         return gt.get_tickers()
+
+    def get_Alphavantage(self,ticker,key):
+        '''
+        Queries data from the alphavantage api
+        :param ticker: Symbol of stock
+        :param key: Api key to quers data
+        :return: Dataframe
+        '''
+        API_URL = "https://www.alphavantage.co/query"
+
+        data = {
+            "function": "TIME_SERIES_DAILY",
+            "symbol": "sth",
+            "apikey": "key",
+        }
+
+        data.update(symbol=ticker, apikey=key)
+
+        response = requests.get(API_URL, data)
+        response_json = response.json()  # maybe redundant
+
+        data = pd.DataFrame.from_dict(response_json['Time Series (Daily)'], orient='index').sort_index(axis=1)
+        data = data.rename(columns={'1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close',
+                                    '5. adjusted close': 'AdjClose', '6. volume': 'Volume'})
+        data = data[['Open', 'High', 'Low', 'Close']]
+        return data
 
 
     def get_Data_Yahoo(self,stock_code, start_date, end_date):
